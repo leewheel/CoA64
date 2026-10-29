@@ -139,7 +139,7 @@ COA_TEST(Appearance_DisplayAndStore) {
     CHECK((Run(L, "return C_Appearance.GetAppearanceDisplayInfo(100)") ==
         V{ "APPEARANCE_DISPLAY_TYPE_ITEM", "1000", "nil", "Iron Helm", "1000", "nil" }));
     CHECK((Run(L, "return C_Appearance.GetAppearanceDisplayInfo(105)") ==
-        V{ "APPEARANCE_DISPLAY_TYPE_SPELL", "0", "nil", "Unknown Item", "0", "9000" }));
+        V{ "APPEARANCE_DISPLAY_TYPE_SPELL", "0", "nil", "未知物品", "0", "9000" }));
     CHECK((Run(L, "return C_Appearance.GetAppearanceDisplayInfo(999)") == V{ "nil", "nil", "nil", "nil", "nil" }));
     CHECK((Run(L, "return C_Appearance.GetAppearanceDetails(100), C_Appearance.GetAppearanceDetails(101)") == V{ "Nice hat", "nil" }));
     CHECK((Run(L, "return C_Appearance.IsEtherealBazaarAppearance(100), C_Appearance.IsEtherealBazaarAppearance(101)") == V{ "true", "false" }));

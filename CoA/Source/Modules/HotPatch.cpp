@@ -299,12 +299,13 @@ namespace {
         Run(p);
     }
 
+    // 中文化: 玩家可见的授权对话框与聊天提示（By leewheel 2026-10-29）
     const char* const kConsentLua = R"lua(
 if not StaticPopupDialogs.ASC_HOT_PATCH_CONSENT then
     StaticPopupDialogs.ASC_HOT_PATCH_CONSENT = {
-        text = "%s wants to change your interface with code it sends (%s).\n\nAllow interface patches from this realm? You can change this later with /hotpatch.",
-        button1 = "Allow",
-        button2 = "Deny",
+        text = "%s 想要用它发送的代码修改你的界面（%s）。\n\n允许来自该领域的界面补丁吗？之后可用 /hotpatch 修改此设置。",
+        button1 = "允许",
+        button2 = "拒绝",
         OnAccept = function() C_HotPatch.SetRealmConsent(true) end,
         OnCancel = function(_, _, reason) if reason ~= "override" then C_HotPatch.SetRealmConsent(false) end end,
         timeout = 0,
@@ -540,9 +541,9 @@ SlashCmdList.ASCHOTPATCH = function(msg)
         C_HotPatch.SetMode(msg)
     end
     local patches = C_HotPatch.GetPatches()
-    DEFAULT_CHAT_FRAME:AddMessage(format("Interface patches: %s (/hotpatch on|ask|off). %d this session.", C_HotPatch.GetMode(), #patches))
+    DEFAULT_CHAT_FRAME:AddMessage(format("界面补丁: %s（/hotpatch on|ask|off）。本次会话共 %d 个。", C_HotPatch.GetMode(), #patches))
     for _, p in ipairs(patches) do
-        DEFAULT_CHAT_FRAME:AddMessage(format("  %s%s: %s%s (%d bytes, %s)", p.id, p.target ~= "" and (" -> " .. p.target) or "",
+        DEFAULT_CHAT_FRAME:AddMessage(format("  %s%s: %s%s（%d 字节，%s）", p.id, p.target ~= "" and (" -> " .. p.target) or "",
             p.outcome, p.detail ~= "" and (" - " .. p.detail) or "", p.size, p.hash))
     end
 end

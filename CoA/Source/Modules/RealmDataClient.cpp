@@ -141,7 +141,7 @@ namespace {
         }
 
         int percent = static_cast<int>(p * 100.0f + 0.5f);
-        std::string text = "Switching realm data";
+        std::string text = "正在切换领域数据";   // 中文化（By leewheel 2026-10-29）
 
         if (!state.pending.empty()) {
             text += ": " + state.pending;

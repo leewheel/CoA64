@@ -659,7 +659,7 @@ CoA::TooltipScaling::Line CoA::TooltipScaling::AddLine(const char* left, const c
     pass.left = left ? left : "";
 
     if (left && *left && strcmp(left, "Requires Two-Handed Axes, Two-Handed Maces, Polearms, Two-Handed Swords, Staves") == 0) {
-        pass.left = "Requires Two-Handed Melee Weapon";
+        pass.left = "需要近战双手武器";   // 中文化（By leewheel 2026-10-29）
     }
 
     const char* l = pass.hasLeft ? pass.left.c_str() : nullptr;

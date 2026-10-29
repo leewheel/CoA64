@@ -412,11 +412,11 @@ std::string CoA::Appearance::detail::AppearanceName(const uint8_t* a) {
 
     if (HasCategoryOfType(a, TYPE_ITEM_SET)) {
         ItemSetRecord set;
-        return FetchItemSet(source, set) ? set.name : "Unknown Item Set";
+        return FetchItemSet(source, set) ? set.name : "未知物品套装";   // 中文化（By leewheel 2026-10-29）
     }
 
     const ItemInfo info = s_deps.itemInfo ? s_deps.itemInfo(source) : ItemInfo();
-    return info.name.empty() ? "Unknown Item" : info.name;
+    return info.name.empty() ? "未知物品" : info.name;
 }
 
 void CoA::Appearance::detail::PushIntList(lua_State* L, const std::vector<uint32_t>& v) {

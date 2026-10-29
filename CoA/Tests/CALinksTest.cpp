@@ -38,12 +38,12 @@ COA_TEST(CA_LinkImportCoA) {
 // The reasons a CoA link is refused, as the original words them.
 COA_TEST(CA_LinkImportErrors) {
     lua_State* L = Start(12);
-    CHECK((Import(L, "999t1") == V{ "false", "CoA build contains unknown entry 999. Parsed tokens before failure: 1. Payload preview: :999t1:", "nil", "nil" }));
+    CHECK((Import(L, "999t1") == V{ "false", "CoA 构建包含未知条目 999。失败前已解析标记数: 1。内容预览: :999t1:", "nil", "nil" }));
     CHECK((Import(L, "100t1") ==
-        V{ "false", "CoA build contains entry 100 that belongs to CoA class 1, but your current class is 12. Parsed tokens before failure: 1.", "nil", "nil" }));
-    CHECK((Import(L, "5800") == V{ "false", "Unable to decode CoA build link. Input length: 4. Input preview: 5800", "nil", "nil" }));
+        V{ "false", "CoA 构建包含条目 100（属于 CoA 职业 1，但你当前的职业是 12）。失败前已解析标记数: 1。", "nil", "nil" }));
+    CHECK((Import(L, "5800") == V{ "false", "无法解码 CoA 构建链接。输入长度: 4。输入预览: 5800", "nil", "nil" }));
     CHECK((Import(L, "151t1:5000") ==
-        V{ "false", "CoA build contains ability spell 5000 from entry 100 that belongs to CoA class 1, but your current class is 12.", "nil", "nil" }));
+        V{ "false", "CoA 构建包含技能法术 5000（条目 100，属于 CoA 职业 1，但你当前的职业是 12）。", "nil", "nil" }));
     CHECK((Run(L, "return C_CharacterAdvancement.ImportPendingBuild({})") == V{ "<error> Usage: C_CharacterAdvancement.ImportPendingBuild(buildURL)" }));
     Stop(L);
 }

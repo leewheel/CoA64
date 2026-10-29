@@ -78,7 +78,7 @@ namespace {
         SetStr(L, "EndGameIDPVP", e.pvpId);
 
         if (e.author.empty()) {   // the player's name (CGObject vtable +0xD8, nullptr as ""), "Unknown" without one
-            SetStr(L, "AuthorName", HasPlayer() ? PlayerName() : "Unknown");
+            SetStr(L, "AuthorName", HasPlayer() ? PlayerName() : "未知");   // 中文化（By leewheel 2026-10-29）
         } else {
             SetStr(L, "AuthorName", e.author);
         }

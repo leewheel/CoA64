@@ -73,6 +73,9 @@ namespace {
         return names.emplace(form, name).first->second;
     }
 
+    // 中文化: 玩家可见 tooltip 文案（By leewheel 2026-10-29）
+
+
     // FUN_101c1b60: nothing when Spell +0x18 has bit 19 or the stance mask (+0x30/+0x34) is empty; otherwise
     // " <form> Requires <form>" for every form in the mask, in id order.
     std::string FormsOf(const SpellRec& rec) {
@@ -104,7 +107,7 @@ namespace {
 
             out += " ";
             out += name;
-            out += " Requires ";
+            out += "需要";   // 中文化（By leewheel 2026-10-29）
             out += name;
         }
 
@@ -201,7 +204,7 @@ namespace {
     // The label and icon every spell-naming @tag@ builds: "Unknown Spell (<id>)" or the spell's name (plus
     // " (<rank>)" when asked and present), and its icon at 20x20.
     void SpellLabel(uint32_t id, bool withRank, std::string& label, std::string& icon) {
-        label = "Unknown Spell (" + U(id) + ")";
+        label = "未知法术 (" + U(id) + ")";
         std::string rank;
         icon = s_questionMark;
         SpellRec rec;
@@ -232,26 +235,26 @@ namespace {
         const SpellRangeRec* row = Row(g_spellRangeDB, static_cast<uint32_t>(rec.m_rangeIndex));
 
         if (!row) {
-            return "|cffFF0000UNKNOWN yd range|r";
+            return "|cffFF0000未知射程|r";   // 中文化（By leewheel 2026-10-29）
         }
 
-        return "|cffFFFFFF" + F(row->m_rangeMax[0]) + " yd range|r";
+        return "|cffFFFFFF" + F(row->m_rangeMax[0]) + " 码射程|r";
     }
 
     std::string CooldownLine(const SpellRec& rec) {   // FUN_101a8720
         uint32_t v = std::max(static_cast<uint32_t>(rec.m_recoveryTime), static_cast<uint32_t>(rec.m_categoryRecoveryTime));
         float f = v < 60000 ? static_cast<float>(static_cast<double>(v)) / 1000.0f : static_cast<float>(static_cast<double>(v)) / 60000.0f;
-        return "|cffFFFFFF" + F(f) + " " + (v < 60000 ? "sec" : "min") + " cooldown|r";
+        return "|cffFFFFFF" + F(f) + (v < 60000 ? " 秒冷却时间|r" : " 分钟冷却时间|r");   // 中文化（By leewheel 2026-10-29）
     }
 
     std::string CastLine(const SpellRec& rec) {   // FUN_101a8600
         const SpellCastTimesRec* row = Row(g_spellCastTimesDB, static_cast<uint32_t>(rec.m_castingTimeIndex));
 
         if (!row) {
-            return "|cffFF0000UNKNOWN sec cast|r";
+            return "|cffFF0000未知施法时间|r";   // 中文化（By leewheel 2026-10-29）
         }
 
-        return "|cffFFFFFF" + F(static_cast<float>(row->m_base) / 1000.0f) + " sec cast|r";
+        return "|cffFFFFFF" + F(static_cast<float>(row->m_base) / 1000.0f) + " 秒施法时间|r";
     }
 
     std::string PowerLine(const SpellRec& rec) {   // FUN_101a88a0
@@ -262,7 +265,7 @@ namespace {
             auto it = insanity.find(static_cast<uint32_t>(rec.m_id));
 
             if (it != insanity.end()) {
-                return "|cffa54cffDrains " + U(it->second) + " Insanity|r";
+                return "|cffa54cff消耗 " + U(it->second) + " 点理智值|r";   // 中文化（By leewheel 2026-10-29）
             }
         }
 
@@ -271,33 +274,33 @@ namespace {
             cost = player ? (player->m_unit->m_unitFieldBaseMana * pct) / 100 : 0;
         }
 
-        std::string name = "UNKNOWN POWER";
+        std::string name = "未知能量类型";   // 中文化（By leewheel 2026-10-29）
 
         switch (rec.m_powerType) {
             case 0:
-                name = "Mana";
+                name = "法力值";
                 break;
             case 1:
-                name = "Rage";
+                name = "怒气值";
                 cost = static_cast<uint32_t>(static_cast<float>(static_cast<double>(cost)) * 0.1f);
                 break;
             case 2:
-                name = "Focus";
+                name = "集中值";
                 break;
             case 3:
-                name = "Energy";
+                name = "能量值";
                 break;
             case 4:
-                name = "Happiness";
+                name = "快乐值";
                 break;
             case 5:
-                name = "Rune";
+                name = "符文";
                 break;
             case 6:
-                name = "Runic Power";
+                name = "符能值";
                 break;
             case -2:
-                name = "Health";
+                name = "生命值";
                 break;
             default:
                 break;
@@ -313,7 +316,7 @@ namespace {
         SpellRec rec;
 
         if (!FetchSpell(id, rec)) {
-            out = std::string("|cffFF0000<UNKNOWN ") + kind + ": " + U(id) + ". ENSURE YOUR GAME IS UP TO DATE>|r";
+            out = std::string("|cffFF0000<未知 ") + kind + ": " + U(id) + "，请确认游戏已更新到最新版本>|r";   // 中文化（By leewheel 2026-10-29）
         } else {
             std::string head = IconTag(SpellIconPath(rec), 20, 20, 0, 0) + " |cffFFFFFF" + (rec.m_name ? rec.m_name : "") + "|r";
 
@@ -665,11 +668,11 @@ bool CoA::SpellText::Markup(std::string& t, bool a, bool cached, int stripQuotes
                     eraseLines(s, e);
                 } else {
                     SpellLabel(id, false, label, icon);
-                    t.replace(s, e - s, Colored("FFFFFF", "Unlocks " + icon + " " + label));
+                    t.replace(s, e - s, Colored("FFFFFF", "解锁 " + icon + " " + label));   // 中文化（By leewheel 2026-10-29）
                 }
             } else if (ScanTag(t, pos, s, e, "@nousewith:", "@", "@nousewith:%u@", 1, &id)) {
                 SpellLabel(id, false, label, icon);
-                t.replace(s, e - s, Colored("FF1A1A", "Not usable with " + icon + " " + label));
+                t.replace(s, e - s, Colored("FF1A1A", "不能与 " + icon + " " + label + " 同时使用"));
             } else if (ScanTag(t, pos, s, e, "@re:", "@", "@re:%u:%d@", 2, &id, &flags)) {
                 uint32_t f = flags < 0 ? static_cast<uint32_t>(-flags) : 0;
 
@@ -677,19 +680,19 @@ bool CoA::SpellText::Markup(std::string& t, bool a, bool cached, int stripQuotes
                     t.erase(s, e - s);
                     hint = true;
                 } else {
-                    put(Render("ENCHANT", id, f & 1, (f >> 1) & 1, cached, true, (f >> 4) & 1, (f >> 5) & 1, (f >> 6) & 1, (f >> 7) & 1));
+                    put(Render("附魔", id, f & 1, (f >> 1) & 1, cached, true, (f >> 4) & 1, (f >> 5) & 1, (f >> 6) & 1, (f >> 7) & 1));   // 中文化（By leewheel 2026-10-29）
                 }
             } else if (ScanTag(t, pos, s, e, "@replaces:", "@", "@replaces:%u@", 1, &id)) {
                 bool k = known(id);
                 SpellLabel(id, true, label, icon);
-                t.replace(s, e - s, Colored(k ? "1AFF1A" : "F83600", "Replaces " + icon + " " + label));
+                t.replace(s, e - s, Colored(k ? "1AFF1A" : "F83600", "替换 " + icon + " " + label));
             } else if (ScanTag(t, pos, s, e, "@req:", "@", "@req:%u@", 1, &id)) {
                 if (noRequirements) {
                     t.erase(s, e - s);
                 } else {
                     bool k = known(id);
                     SpellLabel(id, true, label, icon);
-                    t.replace(s, e - s, Colored(k ? "FFFFFF" : "FF1A1A", "Requires " + icon + " " + label));
+                    t.replace(s, e - s, Colored(k ? "FFFFFF" : "FF1A1A", "需要 " + icon + " " + label));
                 }
             } else if (ScanTag(t, pos, s, e, "@unlockby:", "@", "@unlockby:%u@", 1, &id)) {
                 if (noRequirements) {
@@ -697,16 +700,16 @@ bool CoA::SpellText::Markup(std::string& t, bool a, bool cached, int stripQuotes
                 } else {
                     bool k = known(id);
                     SpellLabel(id, true, label, icon);
-                    t.replace(s, e - s, Colored(k ? "1AFF1A" : "F83600", "Unlocked by " + icon + " " + label));
+                    t.replace(s, e - s, Colored(k ? "1AFF1A" : "F83600", "由 " + icon + " " + label + " 解锁"));
                 }
             } else if (ScanTag(t, pos, s, e, "@usewith:", "@", "@usewith:%u@", 1, &id)) {
                 SpellLabel(id, false, label, icon);
-                t.replace(s, e - s, Colored("FFFFFF", "Usable with " + icon + " " + label));
+                t.replace(s, e - s, Colored("FFFFFF", "可与 " + icon + " " + label + " 搭配使用"));
             } else if (ScanTag(t, pos, s, e, "@wflocation:", "@", "@wflocation:%255[^@]@", 1, buffer)) {
                 bool worldforged = s_deps.mysticWorldforged && s_deps.mysticWorldforged(spell);
                 bool collectedMystic = s_deps.mysticCollected && s_deps.mysticCollected(spell);
                 std::string where = Colored("FC8A00", buffer);
-                std::string note = Colored("00CCFF", "Worldforged Mystic Enchants are soulbound and must be discovered throughout the world!");
+                std::string note = Colored("00CCFF", "铸世者秘纹附魔为灵魂绑定，需要在世界各地发现！");   // 中文化（By leewheel 2026-10-29）
 
                 if (!a && (!worldforged || collectedMystic)) {
                     put("\n" + where);
@@ -720,7 +723,7 @@ bool CoA::SpellText::Markup(std::string& t, bool a, bool cached, int stripQuotes
                     t.erase(s, e - s);
                     hint = true;
                 } else {
-                    put(Render("SPELL", id, f & 1, (f >> 1) & 1, cached, true, (f >> 4) & 1, (f >> 5) & 1, (f >> 6) & 1, (f >> 7) & 1));
+                    put(Render("法术", id, f & 1, (f >> 1) & 1, cached, true, (f >> 4) & 1, (f >> 5) & 1, (f >> 6) & 1, (f >> 7) & 1));   // 中文化（By leewheel 2026-10-29）
                 }
             } else if (t.find("@mountspeed@", pos) != std::string::npos) {   // FUN_10169050: anywhere after pos
                 s = t.find("@mountspeed@", pos);
@@ -815,10 +818,10 @@ bool CoA::SpellText::Markup(std::string& t, bool a, bool cached, int stripQuotes
         }
 
         if (hint && !shift) {
-            t += "\n\n|cff00DDFFHold SHIFT for more information|r";
+            t += "\n\n|cff00DDFF按住 SHIFT 键获取更多信息|r";   // 中文化（By leewheel 2026-10-29）
         }
     } else {
-        t = "|cffFF0000<Error: Maximum recursion depth exceeded>|r";
+        t = "|cffFF0000<错误: 超过最大递归深度>|r";   // 中文化（By leewheel 2026-10-29）
         changed = true;
     }
 

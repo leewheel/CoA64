@@ -337,7 +337,7 @@ COA_TEST(BuildCreator_EntryTable) {
     s_bcName = nullptr;
     CHECK((R(L, g + "b.AuthorName") == V{ "" }));
     s_bcPlayer = false;
-    CHECK((R(L, g + "b.AuthorName") == V{ "Unknown" }));
+    CHECK((R(L, g + "b.AuthorName") == V{ "未知" }));
     E odd = Build("t2");
     odd.category = 14;
     odd.roles = 3;

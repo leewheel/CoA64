@@ -14,3 +14,8 @@ target_link_libraries(CoA
     PRIVATE
         freetype
 )
+
+# 中文化前提：源码/执行字符集按 UTF-8 编入，否则 MSVC 按 GBK 误读中文串（By leewheel 2026-10-29）
+if (MSVC)
+    target_compile_options(CoA PRIVATE /utf-8)
+endif ()

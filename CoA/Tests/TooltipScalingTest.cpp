@@ -381,7 +381,7 @@ COA_TEST(TooltipScaling_AddLineStockPasses) {
 
     const TS two = CoA::TooltipScaling::AddLine("Requires Two-Handed Axes, Two-Handed Maces, Polearms, Two-Handed Swords, Staves",
         nullptr, 0);
-    CHECK(two.kind == TS::Pass && two.left == "Requires Two-Handed Melee Weapon");
+    CHECK(two.kind == TS::Pass && two.left == "需要近战双手武器");
     const TS none = CoA::TooltipScaling::AddLine(nullptr, "right", 0);
     CHECK(none.kind == TS::Pass && !none.hasLeft);
     Stop();

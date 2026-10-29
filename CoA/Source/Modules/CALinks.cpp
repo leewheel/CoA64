@@ -248,16 +248,17 @@ namespace {
         return s.size() < 0x61 ? s : s.substr(0, 0x60) + "...";
     }
 
+    // 中文化: 导入失败的提示会显示给玩家（By leewheel 2026-10-29）
     std::string NotYourClass(Row r, uint8_t cls) {   // FUN_1016f780
         if (r) {
             if (const uint8_t* ct = ClassTypes().Row(RowU32(r, 0x80))) {
                 if (const uint32_t owner = RowU32(ct, 8)) {
-                    return Format("belongs to CoA class {}, but your current class is {}", { std::to_string(owner), std::to_string(cls) });
+                    return Format("属于 CoA 职业 {}，但你当前的职业是 {}", { std::to_string(owner), std::to_string(cls) });
                 }
             }
         }
 
-        return Format("does not belong to your current CoA class {}", { std::to_string(cls) });
+        return Format("不属于你当前的 CoA 职业 {}", { std::to_string(cls) });
     }
 
     // FUN_1016de70: a new id is appended; a repeated rank-1 token adds a rank (capped at the row's max), a repeated
@@ -320,7 +321,7 @@ namespace {
         }
 
         if (text.empty()) {
-            err = Format("Unable to decode CoA build link. Input length: {}. Input preview: {}", { std::to_string(url.size()), PreviewOf(url) });
+            err = Format("无法解码 CoA 构建链接。输入长度: {}。输入预览: {}", { std::to_string(url.size()), PreviewOf(url) });
             return false;
         }
 
@@ -342,23 +343,23 @@ namespace {
                 uint32_t rank = 0;
 
                 if (!ParseU32(tok.substr(0, t), id) || !ParseU32(tok.substr(t + 1), rank)) {
-                    err = Format("Unable to parse CoA talent token: {}", { tok });
+                    err = Format("无法解析 CoA 天赋标记: {}", { tok });
                     return false;
                 }
 
                 const Row r = FindRow(id);
 
                 if (!r) {
-                    err = Format("CoA build contains unknown entry {}. Parsed tokens before failure: {}. Payload preview: {}",
+                    err = Format("CoA 构建包含未知条目 {}。失败前已解析标记数: {}。内容预览: {}",
                         { std::to_string(id), n, PreviewOf(text) });
                     return false;
                 }
 
                 if (!RowVisible(r) || !ClassTypeAdmits(r, cls)) {
                     if (RowVisible(r)) {
-                        err = Format("CoA build contains entry {} that {}. Parsed tokens before failure: {}.", { std::to_string(id), NotYourClass(r, cls), n });
+                        err = Format("CoA 构建包含条目 {}（{}）。失败前已解析标记数: {}。", { std::to_string(id), NotYourClass(r, cls), n });
                     } else {
-                        err = Format("CoA build contains an entry unavailable on this realm: {}. Parsed tokens before failure: {}.", { std::to_string(id), n });
+                        err = Format("CoA 构建包含本领域不可用的条目: {}。失败前已解析标记数: {}。", { std::to_string(id), n });
                     }
 
                     return false;
@@ -367,14 +368,14 @@ namespace {
                 const int type = RowType(r);
 
                 if (type < 1 || type > 4) {
-                    err = Format("CoA build contains a non-advancement entry token: {}. Parsed tokens before failure: {}.", { std::to_string(id), n });
+                    err = Format("CoA 构建包含非进阶条目标记: {}。失败前已解析标记数: {}。", { std::to_string(id), n });
                     return false;
                 }
 
                 const uint32_t take = std::min(MaxRank(r), rank);
 
                 if (!take) {
-                    err = Format("CoA build contains an invalid rank for entry {}.", { std::to_string(id) });
+                    err = Format("CoA 构建中条目 {} 的等级无效。", { std::to_string(id) });
                     return false;
                 }
 
@@ -383,7 +384,7 @@ namespace {
                 uint32_t spell = 0;
 
                 if (!ParseU32(tok, spell)) {
-                    err = Format("Unable to parse CoA spell token: {}", { tok });
+                    err = Format("无法解析 CoA 法术标记: {}", { tok });
                     return false;
                 }
 
@@ -391,10 +392,10 @@ namespace {
                     MergeEntry(entries, RowU32(found, 0), 1);
                 } else {
                     if (Row other = AbilityOf(spell, nullptr)) {
-                        err = Format("CoA build contains ability spell {} from entry {} that {}.",
+                        err = Format("CoA 构建包含技能法术 {}（条目 {}，{}）。",
                             { std::to_string(spell), std::to_string(RowU32(other, 0)), NotYourClass(other, cls) });
                     } else {
-                        err = Format("CoA build contains an unknown ability spell for this class: {}. Parsed tokens before failure: {}.",
+                        err = Format("CoA 构建包含该职业未知的技能法术: {}。失败前已解析标记数: {}。",
                             { std::to_string(spell), n });
                     }
 
@@ -426,8 +427,7 @@ namespace {
         }
 
         if (entries.empty()) {
-            err = "No importable CoA tokens were found. Make sure the link is for your current CoA class and this client patch has "
-                  "those advancement entries.";
+            err = "没有找到可导入的 CoA 标记。请确认该链接对应你当前的 CoA 职业，且此客户端版本包含这些进阶条目。";   // 中文化（By leewheel 2026-10-29）
             return false;
         }
 
